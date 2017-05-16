@@ -12,13 +12,13 @@
 GetAlignmentStatistics <- function(BamFilePath) {
   df <- data.frame(strings=system(paste("samtools idxstats ", BamFilePath), intern=T))
   
-  TotalReads <- df %>% separate(strings, into=c("gene","length","counts","unaligned"),sep = "\t") %>% 
+  TotalReads <- df dplyr::%>% tidyr::separate(strings, into=c("gene","length","counts","unaligned"),sep = "\t") dplyr::%>% 
     plyr::summarise("Total Reads"=sum(as.integer(counts))+sum(as.integer(unaligned)))
   
-  TotalAligned <- df %>% separate(strings, into=c("gene","length","counts","unaligned"),sep = "\t") %>% 
+  TotalAligned <- df dplyr::%>% tidyr::separate(strings, into=c("gene","length","counts","unaligned"),sep = "\t") dplyr::%>% 
     plyr::summarise("Total Mapped Read Count"=sum(as.integer(counts)))
   
-  TotalUnaligned <- df %>% separate(strings, into=c("gene","length","counts","unaligned"),sep = "\t") %>% 
+  TotalUnaligned <- df dplyr::%>% tidyr::separate(strings, into=c("gene","length","counts","unaligned"),sep = "\t") dplyr::%>% 
     plyr::summarise("Total Unmapped Read Count"=sum(as.integer(unaligned)))
   
   out <- data.frame(TotalReads, TotalAligned, TotalUnaligned, "Percent.Mapped" = TotalAligned [[1]] / TotalReads[[1]])
