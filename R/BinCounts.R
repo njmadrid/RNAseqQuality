@@ -130,9 +130,9 @@ BinCounts <- function(TopCDSDF, PileUpPerFile, NumBins=100) {
   BinFlatV2$FileID = rep(rep(FileIDs, rep(NumBins, length(FileIDs))), length(normBin));
   
   # For each bin of each sample, get the median/mean/3rd quartile count across all genes.
-  BinPerFileMedian = ddply(BinFlatV2, .(BinID, FileID), summarise, zscore=median(count));
-  BinPerFileMean = ddply(BinFlatV2, .(BinID, FileID), summarise, zscore=mean(count));
-  BinPerFile3rdQ = ddply(BinFlatV2, .(BinID, FileID), summarise, zscore=as.numeric(summary(count)[5]));
+  BinPerFileMedian = plyr::ddply(BinFlatV2, .(BinID, FileID), summarise, zscore=median(count));
+  BinPerFileMean = plyr::ddply(BinFlatV2, .(BinID, FileID), summarise, zscore=mean(count));
+  BinPerFile3rdQ = plyr::ddply(BinFlatV2, .(BinID, FileID), summarise, zscore=as.numeric(summary(count)[5]));
   
   ScaleMinMax = function(bin) {
     ScaledMinZero = bin$zscore + abs(min(bin$zscore));
@@ -140,9 +140,9 @@ BinCounts <- function(TopCDSDF, PileUpPerFile, NumBins=100) {
     return(bin);
   }
   
-  BinPerFileMedian = rbindlist(lapply(unique(BinPerFileMedian$FileID), function(m) ScaleMinMax(BinPerFileMedian[BinPerFileMedian$FileID==m, ])));
-  BinPerFileMean = rbindlist(lapply(unique(BinPerFileMean$FileID), function(m) ScaleMinMax(BinPerFileMean[BinPerFileMean$FileID==m, ])));
-  BinPerFile3rdQ = rbindlist(lapply(unique(BinPerFile3rdQ$FileID), function(m) ScaleMinMax(BinPerFile3rdQ[BinPerFile3rdQ$FileID==m, ])));
+  BinPerFileMedian = data.table::rbindlist(lapply(unique(BinPerFileMedian$FileID), function(m) ScaleMinMax(BinPerFileMedian[BinPerFileMedian$FileID==m, ])));
+  BinPerFileMean = data.table::rbindlist(lapply(unique(BinPerFileMean$FileID), function(m) ScaleMinMax(BinPerFileMean[BinPerFileMean$FileID==m, ])));
+  BinPerFile3rdQ = data.table::rbindlist(lapply(unique(BinPerFile3rdQ$FileID), function(m) ScaleMinMax(BinPerFile3rdQ[BinPerFile3rdQ$FileID==m, ])));
   BinPerFileMedian$FileID = as.character(BinPerFileMedian$FileID);
   BinPerFileMean$FileID = as.character(BinPerFileMean$FileID);
   BinPerFile3rdQ$FileID = as.character(BinPerFile3rdQ$FileID);
